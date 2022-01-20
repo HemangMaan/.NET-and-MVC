@@ -1,0 +1,108 @@
+using System;
+
+namespace TrainingDay4
+{
+    internal class Product
+    {
+        string prodname;
+        int price, quantity;
+        public void setDetails(string prodname,int price,int quantity)
+        {
+            this.prodname = prodname;
+            this.price = price;
+            this.quantity = quantity;
+        }
+        public void getDetails()
+        {
+            Console.WriteLine("Product: "+prodname+"\t Price: "+price+"\t Quantity: "+quantity);
+        }
+    }
+
+    internal class customer
+    {
+        string customername,address,contactNo;
+        Product[] product;
+        int i = 0;
+        
+        public void productquantity(int n)
+        {
+            product = new Product[n];
+        }
+        public void addCustomer()
+        {
+            Console.WriteLine("Enter Customer name");
+            customername = Console.ReadLine();
+            Console.WriteLine("Enter address");
+            address = Console.ReadLine();
+            Console.WriteLine("Enter contactno.");
+            contactNo = Console.ReadLine();
+        }
+        public void addProduct(Product prod)
+        {
+            product[i] = prod;
+            Console.WriteLine("Product Added \n");
+            i++;
+        }
+
+        public void showCustomer()
+        {
+            Console.WriteLine("Customer Name: "+customername+"\t Address: "+address+"\t contactNo: "+contactNo);
+        }
+        public Product[] getProducts()
+        {
+            return product;
+        }
+    }
+
+    internal class sales
+    {
+        customer c = new customer();
+        public void addDetails()
+        {
+            c.addCustomer();
+        }
+
+        public void prodDetails(int n)
+        {
+            c.productquantity(n);
+            for (int i = 0; i < n; i++)
+            {
+                string prodname;
+                int price, quantity;
+                Product prod = new Product();
+                Console.WriteLine("Enter Product Name ");
+                prodname = Console.ReadLine();
+                Console.WriteLine("Enter price ");
+                price = Convert.ToInt32(Console.ReadLine());
+                Console.WriteLine("Enter quantity ");
+                quantity = Convert.ToInt32(Console.ReadLine());
+                prod.setDetails(prodname, price, quantity);
+                c.addProduct(prod);
+            }
+        }
+
+        public void showDetails()
+        {
+            c.showCustomer();
+            Product[] prod = c.getProducts();
+            for(int i = 0; i < prod.Length; i++)
+            {
+                prod[i].getDetails();
+            }
+        }
+
+    }
+
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            sales s = new sales();
+            s.addDetails();
+            Console.WriteLine("Enter the no. of products to add");
+            int n = Convert.ToInt32(Console.ReadLine());
+            s.prodDetails(n);
+            s.showDetails();
+        }
+    }
+}

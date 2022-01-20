@@ -1,0 +1,134 @@
+using System;
+
+namespace TrainingDay5
+{
+public class Item
+    {
+        public string itemname;
+        public float price;
+        public int quantity;
+    }
+
+    public class Order
+    {
+        int ordno;
+        Item[] itemlist;
+        string ordDate;
+        int i = 0;
+        public Order(int n)
+        {
+            itemlist = new Item[n];
+        }
+        public void addOrderDetails()
+        {
+            Console.WriteLine("Enter order no.");
+            ordno = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Enter order Date ");
+            ordDate = Console.ReadLine();
+        }
+        public void AddItem()
+        {
+            Console.WriteLine("Enter item name");
+            Item it = new Item();
+            it.itemname = Console.ReadLine();
+            Console.WriteLine("Enter item price");
+            it.price = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Enter item quantity");
+            it.quantity = Convert.ToInt32(Console.ReadLine());
+            itemlist[i++] = it;
+        }
+
+        public Item[] GetItems()
+        {
+            return itemlist;
+        }
+    }
+
+    public class Sales
+    {
+        Order order;
+        float totalamount=0;
+        Item[] itemlist;
+
+        public Sales(Order o)
+        {
+            order = o;
+        }
+        public void calculateTotalAmount()
+        {
+            itemlist = order.GetItems();
+            foreach(Item it in itemlist)
+            {
+                totalamount += it.price * it.quantity;
+            }
+            Console.WriteLine("Total amount: "+totalamount);
+        }
+        public void correctStock(Stock s)
+        {
+            Item[] it = s.getStockDetails();
+            foreach(Item it2 in it)
+            {
+                Console.WriteLine("Item name: " + it2.itemname + "Item price: " + it2.price + "Item quantity: " + it2.quantity);
+            }
+        }
+    }
+    public class Purchases
+    {
+        Order purchaseorder;
+        float totalamount = 0;
+        Item[] itemlist;
+
+        public Purchases(Order o)
+        {
+            purchaseorder = o;
+        }
+        public void calculateTotalAmount()
+        {
+            itemlist = purchaseorder.GetItems();
+            foreach (Item it in itemlist)
+            {
+                totalamount += it.price * it.quantity;
+            }
+            Console.WriteLine("Total amount: " + totalamount);
+        }
+        public void correctStock(Stock s)
+        {
+            Item[] it = s.getStockDetails();
+            foreach (Item it2 in it)
+            {
+                Console.WriteLine("Item name: " + it2.itemname + "Item price: " + it2.price + "Item quantity: " + it2.quantity);
+            }
+        }
+    }
+
+    public class Stock
+    {
+        Item[] items_in_stock;
+        public Item[] getStockDetails()
+        {
+            return items_in_stock;
+        }
+        public void setStock(Item[] i)
+        {
+            items_in_stock = i;
+        }
+    }
+
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+
+            Console.WriteLine("Enter the total no. of items in your order");
+            int n = Convert.ToInt32(Console.ReadLine());
+            Order o = new Order(n);
+            o.addOrderDetails();
+            for(int i = 0; i < n; i++)
+                o.AddItem();
+            Sales s = new Sales(o);
+            s.calculateTotalAmount();
+
+
+        }
+    }
+}

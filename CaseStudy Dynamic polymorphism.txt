@@ -1,0 +1,89 @@
+using System;
+
+namespace TrainingDay5
+{
+    public interface Person
+    {
+        public void setDetail();
+        public Person getDetails();
+    }
+    public class Engineer : Person
+    {
+        string fn, ln, desg;
+        public void setDetail()
+        {
+            Console.WriteLine("Enter first Name");
+            this.fn = Console.ReadLine();
+            Console.WriteLine("Enter last Name");
+            this.ln = Console.ReadLine();
+            Console.WriteLine("Enter designation");
+            this.desg = Console.ReadLine();
+        }
+        public Person getDetails()
+        {
+            return this;
+        }
+    }
+    public class Trainee : Person
+    {
+        string fn, ln, desg;
+        public void setDetail()
+        {
+            Console.WriteLine("Enter first Name");
+            this.fn = Console.ReadLine();
+            Console.WriteLine("Enter last Name");
+            this.ln = Console.ReadLine();
+            Console.WriteLine("Enter designation");
+            this.desg = Console.ReadLine();
+        }
+        public Person getDetails()
+        {
+            return this;
+        }
+    }
+    public class Worker : Person
+    {
+        string fn, ln, desg;
+        public void setDetail()
+        {
+            Console.WriteLine("Enter first Name");
+            this.fn = Console.ReadLine();
+            Console.WriteLine("Enter last Name");
+            this.ln = Console.ReadLine();
+            Console.WriteLine("Enter designation");
+            this.desg = Console.ReadLine();
+        }
+        public Person getDetails()
+        {
+            return this;
+        }
+    }
+    public class Salary
+    {
+        public void CalculateSalary(Person p)
+        {
+            if (p is Engineer)
+            {
+                Console.WriteLine("Salary for Engineer");
+            }
+            else if (p is Trainee)
+            {
+                Console.WriteLine("Salary for Trainee");
+            }
+            else if (p is Worker)
+            {
+                Console.WriteLine("Salary for Worker");
+            }
+        }
+    }
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            Person p = new Engineer();
+            p.setDetail();
+            Salary s = new Salary();
+            s.CalculateSalary(p);
+        }
+    }
+}
