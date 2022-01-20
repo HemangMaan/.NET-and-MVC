@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="SimpleIntrest">
+      <HintPath>..\..\SimpleIntrest\SimpleIntrest\bin\Debug\netcoreapp3.1\SimpleIntrest.dll</HintPath>
+    </Reference>
+    <Reference Include="TrainingDay3">
+      <HintPath>..\..\TrainingDay3\TrainingDay3\bin\Debug\TrainingDay3.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
