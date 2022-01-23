@@ -1,0 +1,53 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+namespace TrainingJan21
+{
+public class Items
+    {
+        string itemname;
+        float price;
+
+        public Items(string name, float price)
+        {
+            this.itemname = name;
+            this.price = price;
+        }
+        public String ItemName { get => itemname; set => itemname = value; }
+        public float Price { get => price; set => price = value; }
+
+        public override string ToString()
+        {
+            return $"The itemname is {this.itemname} and the price is {this.price}";
+        }
+    }
+
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            ArrayList arr = new ArrayList();
+            Stack<Items> st = new Stack<Items>();
+
+            arr.Add(new Items("burger", 55f));
+            arr.Add(new Items("Fries", 80f));
+            arr.Add(new Items("Pizza", 150f));
+            arr.Add(new Items("Wraps", 65f));
+            arr.Add(new Items("cola", 60f));
+
+            foreach (Items item in arr)
+            {
+                Console.WriteLine(item.ToString());
+                st.Push(item);
+            }
+
+            Console.WriteLine("LIFO");
+            for (int i = 0; i < 5; i++)
+            {
+                Console.WriteLine(st.Pop());
+            }
+
+
+        }
+    }
+}

@@ -1,0 +1,54 @@
+using System;
+
+namespace TrainingJan21
+{
+
+class ProductInfo<T>
+    {
+        T[] product;
+        T[] producttype;
+        int size;
+        public ProductInfo(int size)
+        {
+            this.size = size;
+            product = new T[size];
+            producttype = new T[size];
+        }
+        public void PrintDetails()
+        {
+            for (int i = 0; i < size; i++)
+            {
+                Console.WriteLine(product[i] + "," + producttype[i]);
+            }
+
+        }
+        public void addProduct(T employeename, int position)
+        {
+            product[position] = employeename;
+        }
+        public void addProductDetails(T departmentname, int position)
+        {
+            producttype[position] = departmentname;
+        }
+
+    }
+
+    internal class Program
+    {
+
+
+        static void Main(string[] args)
+        {
+
+            ProductInfo<string> info = new ProductInfo<string>(3);
+            info.addProduct("shirt", 0);
+            info.addProduct("hoodie", 1);
+            info.addProduct("cap", 2);
+            info.addProductDetails("On sale", 0);
+            info.addProductDetails("50% off", 1);
+            info.addProductDetails("buy 1 get 1", 2);
+            info.PrintDetails();
+            Console.ReadKey();
+        }
+    }
+}

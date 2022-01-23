@@ -1,0 +1,61 @@
+using System;
+using System.IO;
+namespace TrainingJan22
+{
+    internal class Program
+    {
+        public class Employee
+        {
+            string EmployeeName,desg;
+            string email;
+            public string EmployeeNameName
+            {
+                get { return EmployeeName; }
+                set { EmployeeName = value; }
+            }
+            public string Email
+            {
+                get { return email; }
+                set { email = value; }
+            }
+            public string Desg
+            {
+                get { return desg; }
+                set { desg = value; }
+            }
+
+        }
+        public class StoreEmployeeDetails
+        {
+            private static string EMPLOYEE_FILE_NAME = "D:\\DotNET\\sample.txt";
+            public void SaveToFile(Employee emp)
+            {
+                StreamWriter writer = new StreamWriter(EMPLOYEE_FILE_NAME);
+                writer.Write("Employee Name: {0}, Email Id: {1}, Designation: {2}",emp.EmployeeNameName,emp.Email,emp.Desg);
+                writer.Flush();
+                writer.Close();
+            }
+            public void ReadFromFile()
+            {
+                StreamReader reader = new StreamReader(EMPLOYEE_FILE_NAME);
+                string data = reader.ReadToEnd();
+                Console.WriteLine(data);
+                reader.Close();
+
+            }
+        }
+        static void Main(string[] args)
+        {
+            StoreEmployeeDetails store = new StoreEmployeeDetails();
+            Employee emp = new Employee();
+            Console.WriteLine("Enter Employee Name");
+            emp.EmployeeNameName = Console.ReadLine();
+            Console.WriteLine("Enter Email Id");
+            emp.Email = Console.ReadLine();
+            Console.WriteLine("Enter Designation");
+            emp.Desg = Console.ReadLine();
+            store.SaveToFile(emp);
+            store.ReadFromFile();
+        }
+    }
+}
