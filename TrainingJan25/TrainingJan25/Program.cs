@@ -19,11 +19,11 @@ namespace TrainingJan25
             return ds;
         }
 
-        /*class Customer
+        class Customer
         {
             public string Name { get; set; }
             public string city { get; set; }
-        }*/
+        }
 
         class Student
         {
@@ -116,7 +116,7 @@ namespace TrainingJan25
                 Console.WriteLine(co.Name);
             }*/
 
-            List<Student> students = new List<Student>();
+            /*List<Student> students = new List<Student>();
             students.Add(new Student("Hemang", 21, 67));
             students.Add(new Student("Ashish", 22, 87));
             students.Add(new Student("dfgd", 28, 75));
@@ -128,7 +128,10 @@ namespace TrainingJan25
             foreach(Student student in stu)
             {
                 Console.WriteLine(student.name+" "+student.age+" "+student.marks);
-            }
+            }*/
+
+
+
         }
     }
 }
