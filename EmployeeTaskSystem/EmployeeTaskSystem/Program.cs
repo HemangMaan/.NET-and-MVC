@@ -21,7 +21,7 @@ namespace EmployeeTaskSystem
             LEAVE=2,
             NOT_MARKED=3
         }
-        /*public class Task
+        public class Task
         {
             int taskid;
             string name;
@@ -54,7 +54,7 @@ namespace EmployeeTaskSystem
             List<Task> tasks;
             List<Attendance> attendances;
             Rating rating;
-        }*/
+        }
         public static bool Login()
         {
             Console.WriteLine("Enter Emp_id");
@@ -130,29 +130,21 @@ namespace EmployeeTaskSystem
                 }
             }
 
-            public void createAndAssignTask()
+            public void createTask()
             {
-                Console.WriteLine("Enter the Task id");
-                int task_id = Convert.ToInt32(Console.ReadLine());
                 Console.WriteLine("Enter Task");
                 string task = Console.ReadLine();
                 Console.Write("Enter a deadline (e.g. 2022-01-27): ");
                 DateTime inputtedDate = DateTime.Parse(Console.ReadLine());
-                Console.WriteLine("Enter the employee id to assign task.");
-                int emp_id = Convert.ToInt32(Console.ReadLine());
                 try
                 {
                     sqlcon.Open();
-                    string query = "Insert into TaskList values(@task_id,@task,@deadline,@emp_id)";
+                    string query = "Insert into TaskList values(@task,@deadline)";
                     SqlCommand command = new SqlCommand(query,sqlcon);
-                    command.Parameters.Add("@task_id",System.Data.SqlDbType.Int);
                     command.Parameters.Add("@task", System.Data.SqlDbType.NVarChar);
                     command.Parameters.Add("@deadline", System.Data.SqlDbType.DateTime);
-                    command.Parameters.Add("@emp_id", System.Data.SqlDbType.Int);
-                    command.Parameters["@task_id"].Value = task_id;
                     command.Parameters["@task"].Value = task;
                     command.Parameters["@deadline"].Value= inputtedDate;
-                    command.Parameters["@emp_id"].Value= emp_id;
                     int i = command.ExecuteNonQuery();
                     Console.WriteLine("Rows affected: " + i);
                 }
@@ -163,34 +155,61 @@ namespace EmployeeTaskSystem
                 finally { sqlcon?.Close(); }
             }
 
-            public void UpdateTask(int task_id)
+            public void executegivenQuery(string query)
             {
-                Console.WriteLine("What do you want to update in Task?" +
-                    "\nPress 1 to Update Task." +
-                    "\nPress 2 to Update Employee Assigned to task.");
-                int n = Convert.ToInt32(Console.ReadLine());
-                string query = "";
-                switch (n)
-                {
-                    case 1:
-                        Console.WriteLine("Enter New Task");
-                        string task = Console.ReadLine();
-                        query = "update TaskList set task='"+task+"' where task_id="+task_id;
-                        break;
-                    case 2:
-                        Console.WriteLine("Enter Employee id");
-                        int emp_id = Convert.ToInt32(Console.ReadLine());
-                        query = "update TaskList set emp_id=" + emp_id + " where task_id=" + task_id;
-                        break;
-                    default:
-                        Console.WriteLine("Wrong Input.");
-                        break;
-                }
                 try
                 {
                     sqlcon.Open();
-                    SqlCommand cmd = new SqlCommand(query,sqlcon);
-                    int i = cmd.ExecuteNonQuery();
+                    SqlCommand command = new SqlCommand(query, sqlcon);
+                    int i = command.ExecuteNonQuery();
+                    Console.WriteLine("Rows Affected: " + i);
+                }
+                catch (Exception ex) { Console.WriteLine(ex.Message); }
+                finally { sqlcon?.Close(); }
+            }
+
+            public void MapEmployeeToTask(int task_id)
+            {
+                Console.WriteLine("Enter the employee id to assign task.");
+                int emp_id = Convert.ToInt32(Console.ReadLine());
+                string query = "update TaskList set emp_id=" + emp_id + " where task_id=" + task_id;
+                executegivenQuery(query);  
+            }
+
+            public void UpdateTask(int task_id)
+            {
+                Console.WriteLine("Enter the New Task to Update.");
+                string task = Console.ReadLine();
+                string query = "update TaskList set task='"+task+"' where task_id="+task_id;
+                executegivenQuery(query);
+            }
+
+            public void DeleteTask(int task_id)
+            {
+                string query = "delete from TaskList where task_id=" + task_id;
+                executegivenQuery(query);
+            }
+
+            public void RateEmployee(int task_id)
+            {
+                Console.WriteLine("Rate the task Completed by the employee From 1 to 4.");
+                int r = Convert.ToInt32(Console.ReadLine());
+                string query = "update TaskList set rating=" + r + "where task_id=" + task_id;
+                executegivenQuery(query);
+            }
+
+            public void ChangeTaskDeadline(int task_id)
+            {
+                Console.WriteLine("Enter new Deadline.");
+                DateTime inputtedDate = DateTime.Parse(Console.ReadLine());
+                string query = "update TaskList set deadline=@deadline where task_id="+task_id;
+                try
+                {
+                    sqlcon.Open();
+                    SqlCommand command = new SqlCommand(query, sqlcon);
+                    command.Parameters.Add("@deadline", System.Data.SqlDbType.DateTime);
+                    command.Parameters["@deadline"].Value = inputtedDate;
+                    int i = command.ExecuteNonQuery();
                     Console.WriteLine("Rows affected: " + i);
                 }
                 catch (Exception ex)
@@ -200,17 +219,51 @@ namespace EmployeeTaskSystem
                 finally { sqlcon?.Close(); }
             }
 
-            public void DeleteTask(int task_id)
+            public void viewTasks()
             {
+                string query = "select * from TaskList";
                 try
                 {
-                    sqlcon?.Open();
-                    string query = "delete from TaskList where task_id=" + task_id;
-                    SqlCommand cmd = new SqlCommand(query, sqlcon);
-                    int i = cmd.ExecuteNonQuery();
-                    Console.WriteLine("Rows Affected: " + i);
+                    sqlcon.Open();
+                    if (sqlcon.State == ConnectionState.Open)
+                    {
+                        SqlCommand cmd = new SqlCommand(query, sqlcon);
+                        SqlDataReader reader = cmd.ExecuteReader();
+                        Console.WriteLine("Task_id\t Emp_id\t Deadline\t Task");
+                        while (reader.Read())
+                        {
+                            Console.WriteLine(reader[0] + "\t " + reader[3] + "\t " + reader[2]+"\t"+reader[1]);
+                        }
+                    }
                 }
-                catch(Exception ex) { Console.WriteLine(ex.Message); }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                finally { sqlcon?.Close(); }
+            }
+
+            public void viewEmployee()
+            {
+                string query = "select * from employee";
+                try
+                {
+                    sqlcon.Open();
+                    if (sqlcon.State == ConnectionState.Open)
+                    {
+                        SqlCommand cmd = new SqlCommand(query, sqlcon);
+                        SqlDataReader reader = cmd.ExecuteReader();
+                        Console.WriteLine("emp_id\t Name\t Department\t Designation\t password \t superior");
+                        while (reader.Read())
+                        {
+                            Console.WriteLine(reader[0] + "\t " + reader[1] + "\t " + reader[2] + "\t" + reader[3]+"\t " + reader[4] + "\t" + reader[5]);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
                 finally { sqlcon?.Close(); }
             }
         }
@@ -247,7 +300,7 @@ namespace EmployeeTaskSystem
                 try
                 {
                     sqlcon.Open();
-                    string query = "create table TaskList(task_id int primary key,task varchar(50),deadline DATE,emp_id int)";
+                    string query = "create table TaskList(task_id int primary key IDENTITY(1,1),task varchar(50),deadline DATE,emp_id int,rating int,remark varchar(50))";
                     SqlCommand cmd = new SqlCommand(query, sqlcon);
                     int i = cmd.ExecuteNonQuery();
                     Console.WriteLine("No of rows affected: " + i);
@@ -280,57 +333,82 @@ namespace EmployeeTaskSystem
                     sqlcon.Close();
                 }
             }
-            public void createRatingTable()
-            {
-                try
-                {
-                    sqlcon.Open();
-                    string query = "create table Rating(task_id int, task_id int, Rating int,emp_id int)";
-                    SqlCommand cmd = new SqlCommand(query, sqlcon);
-                    int i = cmd.ExecuteNonQuery();
-                    Console.WriteLine("No of rows affected: " + i);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-                finally
-                {
-                    sqlcon.Close();
-                }
-            }
             
-            public void displaydata()
-            {
-                string query = "select * from employee";
-                try
-                {
-                    sqlcon.Open();
-                    if (sqlcon.State == ConnectionState.Open)
-                    {
-                        SqlCommand cmd = new SqlCommand(query, sqlcon);
-                        SqlDataReader reader = cmd.ExecuteReader();
-                        Console.WriteLine("EmpId\t Name\t Address");
-                        while (reader.Read())
-                        {
-                            Console.WriteLine(reader[0] + "\t " + reader[1] + "\t " + reader[2]);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-                finally { sqlcon?.Close(); }
-            }
         }
         static void Main(string[] args)
         {
             SqlConnection sqlcon = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\hemang\Documents\DatabaseSQLDemo.mdf;Integrated Security=True;Connect Timeout=30");
             SqlConn conn = new SqlConn(sqlcon);
+            conn.createEmployeeTable();
             conn.createTaskListTable();
-            Admin admin = new Admin(sqlcon);
-            admin.createAndAssignTask();
+            conn.createAttendanceTable();
+            Console.WriteLine("Are you the Admin?\n Press 1. For Yes 2. For No.");
+            int a = Convert.ToInt32(Console.ReadLine());
+            if(a == 1)
+            {
+                Admin admin = new Admin(sqlcon);
+                bool flag = true;
+                while (flag)
+                {
+                    Console.WriteLine("Enter the Operation You want to Perform.\n" +
+                        "1. To Add the Employee.\n" +
+                        "2. To Add the Task.\n" +
+                        "3. View Tasks.\n" +
+                        "4. Assign Task to Employee.\n" +
+                        "5. Update Task.\n" +
+                        "6. Change Task Deadline.\n" +
+                        "7. Rate employee based on task completion status.\n" +
+                        "8. Delete Task.\n" +
+                        "9. View Employees.\n" +
+                        "10. Any Other Number to Exit.");
+                    int n = Convert.ToInt32(Console.ReadLine());
+                    int t;
+                    switch (n)
+                    {
+                        case 1:
+                            admin.RegisterEmployee();
+                            break;
+                        case 2:
+                            admin.createTask();
+                            break;
+                        case 3:
+                            admin.viewTasks();
+                            break;
+                        case 4:
+                            Console.WriteLine("Enter Task id which you want to assign.");
+                            t = Convert.ToInt32(Console.ReadLine());
+                            admin.MapEmployeeToTask(t);
+                            break;
+                        case 5:
+                            Console.WriteLine("Enter Task id which you want to assign.");
+                            t = Convert.ToInt32(Console.ReadLine());
+                            admin.UpdateTask(t);
+                            break;
+                        case 6:
+                            Console.WriteLine("Enter Task id which you want to change deadline.");
+                            t = Convert.ToInt32(Console.ReadLine());
+                            admin.ChangeTaskDeadline(t);
+                            break;
+                        case 7:
+                            Console.WriteLine("Enter Task id which you want to Rate.");
+                            t = Convert.ToInt32(Console.ReadLine());
+                            admin.RateEmployee(t);
+                            break;
+                        case 8:
+                            Console.WriteLine("Enter Task id which you want to Delete.");
+                            t = Convert.ToInt32(Console.ReadLine());
+                            admin.DeleteTask(t);
+                            break;
+                        case 9:
+                            admin.viewEmployee();
+                            break;
+                        default:
+                            flag = false;
+                            break;
+                    }
+                }
+            }
+            
         }
     }
 }
