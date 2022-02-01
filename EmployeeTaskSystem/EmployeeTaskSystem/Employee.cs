@@ -24,7 +24,7 @@ namespace EmployeeTaskSystem
             try
             {
                 sqlcon.Open();
-                string query = "select emp_id,password from employee";
+                string query = "select emp_id,password from employee where emp_id="+employee_id;
                 SqlCommand cmd = new SqlCommand(query, sqlcon);
                 SqlDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
