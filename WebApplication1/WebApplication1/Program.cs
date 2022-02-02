@@ -1,10 +1,18 @@
+using Microsoft.EntityFrameworkCore;
 using WebApplication1.Infrastructure;
 using WebApplication1.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 //Add the services to the DI Container
-builder.Services.AddSingleton<IRepository<Product, int>, ProductListRepository>();
+/*builder.Services.AddSingleton<IRepository<Product, int>, ProductListRepository>();*/
+builder.Services.AddSingleton<IRepository<Product, int>, ProductDBRepository>();
+builder.Services.AddSingleton<IRepository<Category, int>, CategoryDBRepository>();
+builder.Services.AddDbContext<NorthWindContext>(contextOptions =>
+{
+    contextOptions.UseSqlServer(
+        @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\hemang\Documents\northwind.mdf;Integrated Security=True;Connect Timeout=30");
+});
 /*
     AssScoped -> Creates one object and injects it into the dependencies throughout this request.
     AddTransient -> creates new object for each dependency and injects it

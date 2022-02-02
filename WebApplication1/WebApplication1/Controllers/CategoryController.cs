@@ -1,67 +1,72 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using WebApplication1.Infrastructure;
 using WebApplication1.Models;
 
 namespace WebApplication1.Controllers
 {
-    public class ProductsController : Controller
+    public class CategoryController : Controller
     {
+        IRepository<Category, int> _repository;
 
-        IRepository<Product, int> _repository;
-
-        public ProductsController(IRepository<Product,int> repository)
+        public CategoryController(IRepository<Category,int> repository)
         {
             _repository = repository;
         }
 
-        public IActionResult Index()
+        // GET: CategoryController
+        public ActionResult Index()
         {
             var model = _repository.FindAll();
             return View(model: model);
         }
-        
-        public IActionResult Details(int id)
+
+        // GET: CategoryController/Details/5
+        public ActionResult Details(int id)
         {
             var model = _repository.FindById(id);
-            if(model == null)
+            if (model == null)
                 return NotFound();
             return View(model);
         }
 
-        public IActionResult Create()
+        // GET: CategoryController/Create
+        public ActionResult Create()
         {
-            var model = new Product();
+            var model = new Category();
             return View(model);
         }
+
+        // POST: CategoryController/Create
         [HttpPost]
-        public IActionResult Create(Product model) 
+        public ActionResult Create(Category model)
         {
-            //=> Request provides this data, ASP.NET Runtime uses a ModelBinder
-            //This modelBinder takes each input element and assigns it to the model
-            //In case the assignment fails, the state of the model is marked as invalid.
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return View(model);
             try
             {
                 _repository.AddNew(model);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return View(model);
             }
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Edit(int id)
+        // GET: CategoryController/Edit/5
+        public ActionResult Edit(int id)
         {
             var model = _repository.FindById(id);
-            if(model != null)
+            if (model != null)
                 return View(model);
             else
                 return RedirectToAction(nameof(Index));
         }
+
+        // POST: CategoryController/Edit/5
         [HttpPost]
-        public IActionResult Edit(Product model)
+        public ActionResult Edit(Category model)
         {
             if (!ModelState.IsValid)
                 return View(model);
@@ -69,29 +74,38 @@ namespace WebApplication1.Controllers
             {
                 _repository.Update(model);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return View(model);
             }
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Delete(int id)
+        // GET: CategoryController/Delete/5
+        public ActionResult Delete(int id)
         {
             var model = _repository.FindById(id);
             if (model == null)
             {
                 return RedirectToAction(nameof(Index));
             }
-            else 
+            else
                 return View(model);
         }
 
+        // POST: CategoryController/Delete/5
         [HttpPost, ActionName("Delete")]
-        public IActionResult DeleteConfirmed(int id)
+        public ActionResult DeleteConfirmed(int id)
         {
-            _repository.DeleteById(id);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                _repository.DeleteById(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                return View();
+            }
         }
     }
 }
