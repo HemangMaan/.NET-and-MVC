@@ -1,15 +1,15 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using WebApplication1.Infrastructure;
-using WebApplication1.Models;
+using DatawindDataAccess.Infrastructure;
+using DatawindDataAccess.Models;
 
 namespace WebApplication1.Controllers
 {
     public class CategoryController : Controller
     {
-        IRepository<Category, int> _repository;
+        iCategoryRepository<Category, int> _repository;
 
-        public CategoryController(IRepository<Category,int> repository)
+        public CategoryController(iCategoryRepository<Category,int> repository)
         {
             _repository = repository;
         }

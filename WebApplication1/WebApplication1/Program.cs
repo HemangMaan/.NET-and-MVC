@@ -1,13 +1,27 @@
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Infrastructure;
 using WebApplication1.Models;
+using DatawindDataAccess;
+using DatawindDataAccess.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDistributedMemoryCache();
+
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromSeconds(10);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 //Add the services to the DI Container
 /*builder.Services.AddSingleton<IRepository<Product, int>, ProductListRepository>();*/
 builder.Services.AddSingleton<IRepository<Product, int>, ProductDBRepository>();
-builder.Services.AddSingleton<IRepository<Category, int>, CategoryDBRepository>();
+builder.Services.AddSingleton<iCategoryRepository<
+    DatawindDataAccess.Models.Category, int>, 
+    DatawindDataAccess.Infrastructure.CategoryDBRepository>();
+
 builder.Services.AddDbContext<NorthWindContext>(contextOptions =>
 {
     contextOptions.UseSqlServer(
@@ -22,6 +36,7 @@ builder.Services.AddDbContext<NorthWindContext>(contextOptions =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddWebOptimizer();
 
 var app = builder.Build();
 
@@ -32,6 +47,7 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+app.UseWebOptimizer();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
@@ -39,6 +55,8 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.UseSession();
 
 app.MapControllerRoute(
     name: "default",

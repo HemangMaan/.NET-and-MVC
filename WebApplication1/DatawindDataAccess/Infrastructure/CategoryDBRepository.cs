@@ -1,9 +1,9 @@
 ﻿using System.Data.SqlClient;
-using WebApplication1.Models;
+using DatawindDataAccess.Models;
 
-namespace WebApplication1.Infrastructure
+namespace DatawindDataAccess.Infrastructure
 {
-    public class CategoryDBRepository : BaseRepository, IRepository<Category, int>
+    public class CategoryDBRepository : BaseRepository, iCategoryRepository<Category, int>
     {
         public void AddNew(Category entity)
         {
