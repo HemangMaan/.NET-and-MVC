@@ -3,3 +3,150 @@
 *@
 @{
 }
+<h2 class="mt-5 btn-primary">AJAX API Operations</h2>
+<div class="row mt-5">
+    <div class="offset-2 col-1">Choose Category</div>
+    <div class="col-5">
+        <select id="categoriesDropDown" class="form-control"></select>
+    </div>
+</div>
+<div class="row">
+    <div class="offset-1 col-10">
+        <div class="card shadow rounded-3">
+            <div class="card-header bg-warning d-flex opacity-75">
+                <div class="text-center flex-grow-1 h3">Category Details</div>
+                <div class="">
+                    <button type="button" class="btn btn-lg btn-outline-dark" id="addNewBtn">Add New</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <form id="form1">
+                    <input type="hidden" id="categoryId" name="categoryId" value="0" />
+                    <label class="form-label" for="categoryName">Category Name :</label>
+                    <input type="text" id="categoryName" name="categoryName" class="form-control" />
+                    <label class="form-label" for="categoryDescription">Description :</label>
+                    <input type="text" id="categoryDescription" name="categoryDescription" class="form-control" />
+                    <div class="mt-5 d-flex">
+                        <div class="flex-flex-grow-1"></div>
+                        <button type="button" class="btn btn-success mx-2" id="saveButton">Save</button>
+                        <button type="button" class="btn btn-secondary mx-2" id="cancelButton">Discard</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+<script>
+    var baseUrl = "http://localhost:5091/categories";
+    $(document).ready(()=>{
+        //hide the detailsPanel when the page is loaded.
+        $("#detailsPanel").hide();
+        //call the load data function
+        loadCategoryData();
+        //Handle the change event of the dropdown
+        $("#categoriesDropDown").change(()=>{
+            //get the value of the selected option in the dropdown.
+            var selectedId = $("#categoriesDropDown option:selected").val();
+            //fetch the details from the API
+            $.ajax(`${baseUrl}/details/${selectedId}`)
+            .done((response)=>{
+                //show the details panel
+                $("#detailsPanel").show();
+                //assign the response data to the various text controls
+                assignToFormControls(response);
+            });
+        });
+        //flag for handling new/update operations. If new button clicked, this flag is set to true, else false
+        var isAddNew = false;
+        //Handle the 'AddNewButton' click event
+        $("#addNewBtn").click(function(e) {
+            //preventing the default behavior of the form, which is to submit the form to the server.
+            e.preventDefault();
+            //set the isAddNew flag to true;
+            isAddNew = true;
+            //create an empty category object and assign it to the form elements
+            var obj = {categoryId:0, categoryName:'', categoryDescription:''};
+            assignToFormControls(obj);
+        });
+        //Handle the discard button click
+        $("#cancelButton").click(function(e){
+            e.preventDefault();
+            //reset the isAddNew flag
+            isAddNew = false;
+            //create empty object and assign to form elements
+            var obj = {categoryId:0, categoryName:'', categoryDescription:''};
+            assignToFormControls(obj);
+            //hide the details panel
+            $("#detailsPanel").hide();
+            //re-fetch the data from the server
+            loadCategoryData();
+        });
+        $("#saveButton").click((e) => { 
+            e.preventDefault(); 
+            //call function to save the data
+            saveCategoryData(isAddNew);
+            isAddNew = false;
+        })
+    })  //END of the document.ready() 
+    //OUTSIDE the document.ready() function
+    function saveCategoryData(isAddNew) { 
+        //create the request body as a JSON string 
+        var formData = {
+            categoryId:$("#categoryId").val(), 
+            categoryName:$("#categoryName").val(), 
+            categoryDescription: $("#categoryDescription").val()
+        };
+        var headers = { 
+            'Content-Type' : 'application/json'
+        }; 
+        var urlPart = '';
+        var method='POST';
+        if(isAddNew) { 
+            //call the create API function 
+            urlPart = `/create`; 
+        } else { 
+            //call the update API function 
+            urlPart = `/update/${formData.categoryId}`;
+            method='PUT';
+        }
+        $.ajax({
+            url: `${baseUrl}${urlPart}`,
+            method: method,
+            headers: headers,
+            data: JSON.stringify(formData)
+        }).done((response) => { 
+            loadCategoryData();
+            //hide the details panel after updating 
+            $("#detailsPanel").hide();
+        });
+    }
+    //function to load the category data.
+    function loadCategoryData() {
+        //Placing an ajax call to the Web API
+        $.ajax(`${baseUrl}/list`)
+        .done((response)=>{  //when the response from the server is received
+            //empty the contents of the dropdown list
+            $("#categoriesDropDown").empty();
+            //an repopulate it by iterating over the response JSON collection
+            $.each(response, (index,value)=>{
+                //creating an option object
+                var option = `<option value=${value.categoryId}>${value.categoryName}</option>`;
+                //and appending it to the dropdown list
+                $("#categoriesDropDown").append(option);
+            });
+            //inserting an empty element and setting this element as selected item.
+            $("#categoriesDropDown").prepend("<option value='0' selected>--Select Category--</option>");
+        });
+    }
+    function assignToFormControls(inputData) {
+        //$("#categoryId").val(inputData.categoryId);
+        //$("#categoryName").val(inputData.categoryName);
+        //$("#description").val(inputData.description);
+        document.getElementById("categoryId").value = inputData.categoryId;
+        document.getElementById("categoryName").value = inputData.categoryName;
+        document.getElementById("categoryDescription").value = inputData.categoryDescription;
+    }
+</script>
+}

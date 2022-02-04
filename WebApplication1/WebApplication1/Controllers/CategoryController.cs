@@ -15,10 +15,18 @@ namespace WebApplication1.Controllers
         }
 
         // GET: CategoryController
-        public ActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var model = _repository.FindAll();
-            return View(model: model);
+            //var model = _repository.FindAll();
+            //return View(model: model);
+            string requestURL = "http://localhost:5091/Categories/list";
+            using(HttpClient client = new HttpClient())
+            {
+                var response = await client.GetAsync(requestURL, HttpCompletionOption.ResponseHeadersRead);
+                var data = await response.Content.ReadAsStringAsync();
+                var model = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<Category>>(data);
+                return View(model);
+            }
         }
 
         // GET: CategoryController/Details/5
