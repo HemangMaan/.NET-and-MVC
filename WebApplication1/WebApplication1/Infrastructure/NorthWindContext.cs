@@ -5,7 +5,7 @@ namespace WebApplication1.Infrastructure
 {
     public class NorthWindContext: DbContext
     {
-        public NorthWindContext(DbContextOptions options) : base(options)
+        public NorthWindContext(DbContextOptions<NorthWindContext> options) : base(options)
         {
 
         }

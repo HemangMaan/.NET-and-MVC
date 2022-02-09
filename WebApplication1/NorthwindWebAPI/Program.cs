@@ -1,9 +1,19 @@
 using DatawindDataAccess.Infrastructure;
 using DatawindDataAccess.Models;
-
+using NorthwindWebAPI.Models;
+using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddDbContext<BFLUsersContext>(contextOptions =>
+{
+    contextOptions.UseSqlServer(
+        @"Data Source=(LocalDB)\MSSQLLocalDB;Database=BFLUsers;Integrated Security=True;Connect Timeout=30"
+        );
+});
+builder.Services.AddScoped<IUserServices, UserServices>();
+
+
 builder.Services.AddSingleton<iCategoryRepository<Category,int>, CategoryDBRepository>();
 builder.Services.AddCors(options =>
 {
@@ -25,7 +35,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors();
-app.UseAuthorization();
+//app.UseAuthorization();
+app.UseMiddleware<JwtMiddleware>();
 
 app.MapControllers();
 

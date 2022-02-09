@@ -31,7 +31,24 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Category" asp-action="Index">Categories</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Customers" asp-action="Index">Customers</a>
+                        </li>
                     </ul>
+                    <div>
+                        @if(Context.Session.GetString("Username") != null)
+                        {
+                            <div>
+                                Welcome, @Context.Session.GetString("Username")
+                                <a asp-action="Logout" asp-controller="Account"
+                                class="btn btn-danger">Logout</a>
+                            </div>
+                        }
+                        else{
+                            <a asp-action="Login" asp-controller="Account" asp-route-returnUrl="/"
+                                class="btn btn-success">Login</a>
+                        }
+                    </div>
                 </div>
             </div>
         </nav>

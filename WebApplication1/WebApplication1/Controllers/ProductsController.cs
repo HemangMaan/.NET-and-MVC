@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using WebApplication1.Infrastructure;
 using WebApplication1.Models;
 
 namespace WebApplication1.Controllers
 {
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public class ProductsController : Controller
     {
-
         IRepository<Product, int> _repository;
 
         public ProductsController(IRepository<Product,int> repository)
@@ -22,6 +23,9 @@ namespace WebApplication1.Controllers
         
         public IActionResult Details(int id)
         {
+            string role = HttpContext.User.FindFirst(ClaimTypes.Role).Value;
+            if(!role.ToLower().Contains("admin"))
+                return Redirect("/home/accessdenied");
             var model = _repository.FindById(id);
             if(model == null)
                 return NotFound();

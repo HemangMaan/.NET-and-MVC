@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using DatawindDataAccess.Infrastructure;
 using DatawindDataAccess.Models;
+using NorthwindWebAPI.Models;
+
 namespace NorthwindWebAPI.Controllers
 {
     [Route("[controller]")]
@@ -12,9 +14,9 @@ namespace NorthwindWebAPI.Controllers
         public CategoriesController(iCategoryRepository<Category, int> repository)
             => _repository = repository;
 
-
         //URL: /categories/list
         [HttpGet("list")]
+        [Authorize]
         public ActionResult<IEnumerable<Category>> GetAll()
         {
             var model = _repository.FindAll();

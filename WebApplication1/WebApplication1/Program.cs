@@ -3,6 +3,7 @@ using WebApplication1.Infrastructure;
 using WebApplication1.Models;
 using DatawindDataAccess;
 using DatawindDataAccess.Infrastructure;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,15 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/account/login";
+        options.AccessDeniedPath = "/home/accessdenied";
+        options.ExpireTimeSpan = TimeSpan.FromSeconds(10);
+    });
+
 
 //Add the services to the DI Container
 /*builder.Services.AddSingleton<IRepository<Product, int>, ProductListRepository>();*/
@@ -27,6 +37,17 @@ builder.Services.AddDbContext<NorthWindContext>(contextOptions =>
     contextOptions.UseSqlServer(
         @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\hemang\Documents\northwind.mdf;Integrated Security=True;Connect Timeout=30");
 });
+builder.Services.AddDbContext<AuthenticationContext>(contextOptions =>
+{
+    contextOptions.UseSqlServer(
+        @"Data Source=(LocalDB)\MSSQLLocalDB;Database=BFLUsers;Integrated Security=True;Connect Timeout=30");
+});
+
+//Add the appsettings data sections to the application, so that the lists can be injected where required.
+builder.Services.Configure<List<User>>(builder.Configuration.GetSection("Users"));
+builder.Services.Configure<List<Role>>(builder.Configuration.GetSection("Roles"));
+builder.Services.Configure<List<UserRoles>>(builder.Configuration.GetSection("UserRoles"));
+builder.Services.AddScoped<IUserServices, UserServices>();
 /*
     AssScoped -> Creates one object and injects it into the dependencies throughout this request.
     AddTransient -> creates new object for each dependency and injects it
@@ -53,6 +74,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
